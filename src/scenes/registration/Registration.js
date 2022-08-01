@@ -1,11 +1,20 @@
 import React, { useState } from 'react'
-import { Image, Text, TextInput, TouchableOpacity, View, Linking, StatusBar, useColorScheme } from 'react-native'
+import {
+  Image,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Linking,
+  StatusBar,
+  useColorScheme,
+} from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import styles from './styles';
+import styles from './styles'
 import { firebase } from '../../firebase/config'
 import Spinner from 'react-native-loading-spinner-overlay'
 
-export default function Registration({navigation}) {
+export default function Registration({ navigation }) {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -32,24 +41,25 @@ export default function Registration({navigation}) {
           id: uid,
           email,
           fullName,
-          avatar: 'https://firebasestorage.googleapis.com/v0/b/reactnative-expo-boilerplate.appspot.com/o/icon.png?alt=media&token=7f2812b7-e1d9-48e3-9720-e79d6650cea5',
-        };
+          avatar:
+            'https://firebasestorage.googleapis.com/v0/b/reactnative-expo-boilerplate.appspot.com/o/icon.png?alt=media&token=7f2812b7-e1d9-48e3-9720-e79d6650cea5',
+        }
         const usersRef = firebase.firestore().collection('users')
         usersRef
           .doc(uid)
           .set(data)
           .then(() => {
-            navigation.navigate('Home', {user: data})
+            navigation.navigate('Home', { user: data })
           })
           .catch((error) => {
             setSpinner(false)
             alert(error)
-          });
+          })
       })
       .catch((error) => {
         setSpinner(false)
         alert(error)
-    });
+      })
   }
 
   return (
@@ -57,14 +67,15 @@ export default function Registration({navigation}) {
       <StatusBar barStyle="light-content" />
       <KeyboardAwareScrollView
         style={{ flex: 1, width: '100%' }}
-        keyboardShouldPersistTaps="always">
+        keyboardShouldPersistTaps="always"
+      >
         <Image
           style={styles.logo}
           source={require('../../../assets/icon.png')}
         />
         <TextInput
           style={scheme === 'dark' ? styles.darkinput : styles.input}
-          placeholder='Your Name'
+          placeholder="Your Name"
           placeholderTextColor="#aaaaaa"
           onChangeText={(text) => setFullName(text)}
           value={fullName}
@@ -73,7 +84,7 @@ export default function Registration({navigation}) {
         />
         <TextInput
           style={scheme === 'dark' ? styles.darkinput : styles.input}
-          placeholder='E-mail'
+          placeholder="E-mail"
           placeholderTextColor="#aaaaaa"
           onChangeText={(text) => setEmail(text)}
           value={email}
@@ -85,7 +96,7 @@ export default function Registration({navigation}) {
           style={scheme === 'dark' ? styles.darkinput : styles.input}
           placeholderTextColor="#aaaaaa"
           secureTextEntry
-          placeholder='Password'
+          placeholder="Password"
           onChangeText={(text) => setPassword(text)}
           value={password}
           underlineColorAndroid="transparent"
@@ -95,7 +106,7 @@ export default function Registration({navigation}) {
           style={scheme === 'dark' ? styles.darkinput : styles.input}
           placeholderTextColor="#aaaaaa"
           secureTextEntry
-          placeholder='Confirm Password'
+          placeholder="Confirm Password"
           onChangeText={(text) => setConfirmPassword(text)}
           value={confirmPassword}
           underlineColorAndroid="transparent"
@@ -103,17 +114,36 @@ export default function Registration({navigation}) {
         />
         <TouchableOpacity
           style={styles.button}
-          onPress={() => onRegisterPress()}>
+          onPress={() => onRegisterPress()}
+        >
           <Text style={styles.buttonTitle}>Agree and Create account</Text>
         </TouchableOpacity>
         <View style={styles.footerView}>
-          <Text style={scheme === 'dark' ? styles.darkfooterText : styles.footerText}>Already got an account? <Text onPress={onFooterLinkPress} style={styles.footerLink}>Log in</Text></Text>
+          <Text
+            style={
+              scheme === 'dark' ? styles.darkfooterText : styles.footerText
+            }
+          >
+            Already got an account?{' '}
+            <Text onPress={onFooterLinkPress} style={styles.footerLink}>
+              Log in
+            </Text>
+          </Text>
         </View>
-        <Text style={styles.link} onPress={ ()=>{ Linking.openURL('https://github.com/kiyohken2000/reactnative-expo-firebase-boilerplate')}}>Require agree EULA</Text>
+        <Text
+          style={styles.link}
+          onPress={() => {
+            Linking.openURL(
+              'https://github.com/kiyohken2000/reactnative-expo-firebase-boilerplate',
+            )
+          }}
+        >
+          Require agree EULA
+        </Text>
       </KeyboardAwareScrollView>
       <Spinner
         visible={spinner}
-        textStyle={{ color: "#fff" }}
+        textStyle={{ color: '#fff' }}
         overlayColor="rgba(0,0,0,0.5)"
       />
     </View>

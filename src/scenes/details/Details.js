@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Text, View, StatusBar, TextInput, TouchableOpacity, useColorScheme } from 'react-native'
+import {
+  Text,
+  View,
+  StatusBar,
+  TextInput,
+  TouchableOpacity,
+  useColorScheme,
+} from 'react-native'
 import styles from './styles'
 import { firebase } from '../../firebase/config'
 import { Avatar } from 'react-native-elements'
@@ -18,49 +25,59 @@ export default function Detail({ route, navigation }) {
   useEffect(() => {
     setAvatar(userData.avatar)
     setFullName(userData.fullName)
-  },[])
+  }, [])
 
   const ImageChoiceAndUpload = async () => {
     try {
       if (Constants.platform.ios) {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync()
         if (status !== 'granted') {
-          alert("Permission is required for use.");
-          return;
+          alert('Permission is required for use.')
+          return
         }
       }
-      const result = await ImagePicker.launchImageLibraryAsync();
-        if (!result.cancelled) {
-          const actions = [];
-          actions.push({ resize: { width: 300 } });
-          const manipulatorResult = await ImageManipulator.manipulateAsync(
-            result.uri,
-            actions,
-            {
-              compress: 0.4,
-            },
-          );
-          const localUri = await fetch(manipulatorResult.uri);
-          const localBlob = await localUri.blob();
-          const filename = userData.id + new Date().getTime()
-          const storageRef = firebase.storage().ref().child(`avatar/${userData.id}/` + filename);
-          const putTask = storageRef.put(localBlob);
-          putTask.on('state_changed', (snapshot) => {
-            let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      const result = await ImagePicker.launchImageLibraryAsync()
+      if (!result.cancelled) {
+        const actions = []
+        actions.push({ resize: { width: 300 } })
+        const manipulatorResult = await ImageManipulator.manipulateAsync(
+          result.uri,
+          actions,
+          {
+            compress: 0.4,
+          },
+        )
+        const localUri = await fetch(manipulatorResult.uri)
+        const localBlob = await localUri.blob()
+        const filename = userData.id + new Date().getTime()
+        const storageRef = firebase
+          .storage()
+          .ref()
+          .child(`avatar/${userData.id}/` + filename)
+        const putTask = storageRef.put(localBlob)
+        putTask.on(
+          'state_changed',
+          (snapshot) => {
+            let progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100
             setProgress(parseInt(progress) + '%')
-          }, (error) => {
-            console.log(error);
-            alert("Upload failed.");
-          }, () => {
-            putTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+          },
+          (error) => {
+            console.log(error)
+            alert('Upload failed.')
+          },
+          () => {
+            putTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
               setProgress('')
               setAvatar(downloadURL)
             })
-          })
-        }
+          },
+        )
+      }
     } catch (e) {
-        console.log('error',e.message);
-        alert("The size may be too much.");
+      console.log('error', e.message)
+      alert('The size may be too much.')
     }
   }
 
@@ -80,33 +97,42 @@ export default function Detail({ route, navigation }) {
     <View style={styles.container}>
       <KeyboardAwareScrollView
         style={{ flex: 1, width: '100%' }}
-        keyboardShouldPersistTaps="always">
+        keyboardShouldPersistTaps="always"
+      >
         <StatusBar barStyle="light-content" />
-          <View style={styles.avatar}>
-            <Avatar
-              size="xlarge"
-              rounded
-              title="NI"
-              onPress={ImageChoiceAndUpload}
-              source={{ uri: avatar }}
-            />
-          </View>
-          <Text style={scheme === 'dark' ? styles.darkprogress : styles.progress}>{progress}</Text>
-          <Text style={scheme === 'dark' ? styles.darkfield : styles.field}>Name:</Text>
-          <TextInput
-            style={scheme === 'dark' ? styles.darkinput : styles.input}
-            placeholder={fullName}
-            placeholderTextColor="#aaaaaa"
-            onChangeText={(text) => setFullName(text)}
-            value={fullName}
-            underlineColorAndroid="transparent"
-            autoCapitalize="none"
+        <View style={styles.avatar}>
+          <Avatar
+            size="xlarge"
+            rounded
+            title="NI"
+            onPress={ImageChoiceAndUpload}
+            source={{ uri: avatar }}
           />
-          <Text style={scheme === 'dark' ? styles.darkfield : styles.field}>Mail:</Text>
-          <Text style={scheme === 'dark' ? styles.darktitle : styles.title}>{userData.email}</Text>
-          <TouchableOpacity style={styles.button} onPress={profileUpdate}>
-            <Text style={styles.buttonText}>Update</Text>
-          </TouchableOpacity>
+        </View>
+        <Text style={scheme === 'dark' ? styles.darkprogress : styles.progress}>
+          {progress}
+        </Text>
+        <Text style={scheme === 'dark' ? styles.darkfield : styles.field}>
+          Name:
+        </Text>
+        <TextInput
+          style={scheme === 'dark' ? styles.darkinput : styles.input}
+          placeholder={fullName}
+          placeholderTextColor="#aaaaaa"
+          onChangeText={(text) => setFullName(text)}
+          value={fullName}
+          underlineColorAndroid="transparent"
+          autoCapitalize="none"
+        />
+        <Text style={scheme === 'dark' ? styles.darkfield : styles.field}>
+          Mail:
+        </Text>
+        <Text style={scheme === 'dark' ? styles.darktitle : styles.title}>
+          {userData.email}
+        </Text>
+        <TouchableOpacity style={styles.button} onPress={profileUpdate}>
+          <Text style={styles.buttonText}>Update</Text>
+        </TouchableOpacity>
       </KeyboardAwareScrollView>
     </View>
   )
